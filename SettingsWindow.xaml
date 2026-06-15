@@ -191,6 +191,22 @@
             <TextBlock DockPanel.Dock="Top" Foreground="{DynamicResource FgDim}" TextWrapping="Wrap" Margin="0,6,0,8"
                        Text="Everything you've copied. Double-click an item to copy it back to the clipboard (this does not paste). Right-click for Copy / Pin / Delete."/>
 
+            <Border DockPanel.Dock="Top" Background="{DynamicResource BgRow}" Padding="12" Margin="0,0,0,8">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Items to keep:" Foreground="{DynamicResource Fg}" FontSize="13"
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Slider x:Name="HistorySlider" Width="200" Minimum="30" Maximum="100"
+                                IsSnapToTickEnabled="True" TickFrequency="5" VerticalAlignment="Center"
+                                ValueChanged="OnHistorySizeChanged"/>
+                        <TextBlock x:Name="HistoryValue" Foreground="{DynamicResource Accent}" FontWeight="SemiBold"
+                                   VerticalAlignment="Center" Margin="10,0,0,0"/>
+                    </StackPanel>
+                    <TextBlock Foreground="{DynamicResource FgDim}" FontSize="12" TextWrapping="Wrap" Margin="0,4,0,0"
+                               Text="How many recent items to keep (30–100). Pinned items are kept forever and don't count toward this."/>
+                </StackPanel>
+            </Border>
+
             <Border DockPanel.Dock="Top" Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderColor}"
                     BorderThickness="1" Padding="8,0" Margin="0,0,0,8">
                 <Grid>

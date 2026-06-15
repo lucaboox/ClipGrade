@@ -50,6 +50,9 @@ public class AppSettings
     /// single click pastes it (the default).</summary>
     public bool PasteOnDoubleClick { get; set; }
 
+    /// <summary>How many recent (unpinned) entries to keep, 30–100.</summary>
+    public int MaxHistory { get; set; } = 30;
+
     /// <summary>Name of the active theme: "Dark", "Light", or a custom name.</summary>
     public string SelectedTheme { get; set; } = "Dark";
 

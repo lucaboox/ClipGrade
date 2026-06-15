@@ -12,7 +12,11 @@ namespace ClipboardApp.Services;
 /// </summary>
 public class ClipboardStore
 {
-    public const int MaxHistory = 30;           // unpinned entries kept; pinned are unlimited
+    public const int MinHistory = 30;
+    public const int MaxHistoryLimit = 100;
+
+    /// <summary>How many unpinned entries to keep (pinned are unlimited).</summary>
+    public int MaxHistory { get; private set; } = 30;
 
     public ObservableCollection<ClipboardEntry> Entries { get; } = new();
 
@@ -61,6 +65,13 @@ public class ClipboardStore
             return;
         }
         Entries.Insert(0, new ClipboardEntry { Kind = EntryKind.Image, ImagePath = path });
+        TrimAndSave();
+    }
+
+    /// <summary>Sets the unpinned history cap (clamped) and trims to it.</summary>
+    public void SetMaxHistory(int value)
+    {
+        MaxHistory = Math.Clamp(value, MinHistory, MaxHistoryLimit);
         TrimAndSave();
     }
 

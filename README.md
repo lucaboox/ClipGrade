@@ -16,8 +16,9 @@ right above your text cursor.
 ## Features
 
 - **Captures text and images** copied anywhere in Windows.
-- **Keeps the last 30 clipboard entries** (images included). Pinned items are
-  kept **forever** and never count against the 30-entry limit.
+- **Keeps your recent clipboard entries** (images included) — how many is
+  adjustable from **30 to 100** in Settings. Pinned items are kept **forever**
+  and never count against that limit.
 - **Right-click any entry** for a menu: Paste, Copy, Pin/Unpin, Delete. Pinned
   items show a small filled pin marker and persist across restarts.
 - **Hover an entry** to preview its full text; **hover an image** for a larger

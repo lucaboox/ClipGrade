@@ -56,6 +56,10 @@ public partial class SettingsWindow : Window
         _clipView = new System.Windows.Data.ListCollectionView(_store.Entries) { Filter = ClipFilter };
         ClipList.ItemsSource = _clipView;
 
+        int cap = Math.Clamp(_settings.MaxHistory, (int)HistorySlider.Minimum, (int)HistorySlider.Maximum);
+        HistorySlider.Value = cap;
+        HistoryValue.Text = $"{cap} items";
+
         RefreshShortcutDisplay();
         WinVCheck.IsChecked = _settings.Hotkey.UseWinV;
         PauseGamesCheck.IsChecked = _settings.PauseInFullscreen;
@@ -552,6 +556,16 @@ public partial class SettingsWindow : Window
     }
 
     private void OnClipClearSearch(object sender, RoutedEventArgs e) => ClipSearchBox.Text = string.Empty;
+
+    private void OnHistorySizeChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded) return; // fires while initializing in the constructor
+        int n = (int)HistorySlider.Value;
+        HistoryValue.Text = $"{n} items";
+        _settings.MaxHistory = n;
+        _store.SetMaxHistory(n);
+        _settingsStore.Save(_settings);
+    }
 
     private void OnClipTabChanged(object sender, RoutedEventArgs e)
     {

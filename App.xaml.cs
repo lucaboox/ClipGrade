@@ -43,6 +43,7 @@ public partial class App : System.Windows.Application
 
         _store = new ClipboardStore();
         _store.Load();
+        _store.SetMaxHistory(_settings.MaxHistory);
 
         // The popup also serves as the hidden clipboard/hotkey message sink.
         _window = new MainWindow(_store, _settings);

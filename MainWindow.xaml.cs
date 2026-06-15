@@ -1,9 +1,11 @@
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ClipboardApp.Models;
 using ClipboardApp.Services;
@@ -281,6 +283,10 @@ public partial class MainWindow : Window
                 var bmp = System.Windows.Clipboard.GetImage();
                 if (bmp != null) _store.AddImage(bmp);
             }
+            else if (System.Windows.Clipboard.ContainsFileDropList())
+            {
+                CaptureFiles(System.Windows.Clipboard.GetFileDropList());
+            }
             else if (System.Windows.Clipboard.ContainsText())
             {
                 var text = System.Windows.Clipboard.GetText();
@@ -293,6 +299,45 @@ public partial class MainWindow : Window
             Dispatcher.BeginInvoke(new Action(() => TryCapture(attempt + 1)), DispatcherPriority.Background);
         }
         catch { /* give up */ }
+    }
+
+    /// <summary>
+    /// Captures copied image files as image entries (with preview). Non-image
+    /// files are ignored.
+    /// </summary>
+    private void CaptureFiles(System.Collections.Specialized.StringCollection files)
+    {
+        foreach (var path in files)
+        {
+            if (string.IsNullOrEmpty(path)) continue;
+            if (TryLoadImageFile(path, out var bmp) && bmp != null)
+                _store.AddImage(bmp);
+        }
+    }
+
+    /// <summary>Decodes a known image file to a bitmap (uses the system imaging codecs).</summary>
+    private static bool TryLoadImageFile(string path, out BitmapSource? bmp)
+    {
+        bmp = null;
+        try
+        {
+            if (!File.Exists(path)) return false;
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            if (ext is not (".png" or ".jpg" or ".jpeg" or ".jfif" or ".bmp" or ".gif"
+                or ".tif" or ".tiff" or ".webp" or ".ico"))
+                return false;
+
+            var decoder = BitmapDecoder.Create(new Uri(path),
+                BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            var frame = decoder.Frames[0];
+            frame.Freeze();
+            bmp = frame;
+            return true;
+        }
+        catch
+        {
+            return false; // unsupported (e.g. webp with no system codec) — caller records the path
+        }
     }
 
     // ------------------------------------------------------------------
