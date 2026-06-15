@@ -1,0 +1,266 @@
+<Window x:Class="ClipboardApp.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ClipGrade — Settings"
+        Width="560" Height="600"
+        MinWidth="460" MinHeight="420"
+        WindowStartupLocation="CenterScreen"
+        Icon="clipboard.ico"
+        Background="{DynamicResource Bg}">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <Style x:Key="TabRadio" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource FgDim}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,4,0"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="b" CornerRadius="0" Background="Transparent" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource Accent}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource BgRowHot}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Btn" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource Fg}"/>
+            <Setter Property="Background" Value="{DynamicResource BgRow}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="b" CornerRadius="0" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource BgRowHot}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="IconBtn" TargetType="Button" BasedOn="{StaticResource Btn}">
+            <Setter Property="Foreground" Value="{DynamicResource IconColor}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="{DynamicResource BgPanel}"/>
+            <Setter Property="Foreground" Value="{DynamicResource Fg}"/>
+            <Setter Property="CaretBrush" Value="{DynamicResource Fg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+        </Style>
+
+        <Style x:Key="EntryItem" TargetType="ListBoxItem">
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="b" CornerRadius="0" Background="{DynamicResource BgRow}" Padding="10,8">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource BgRowHot}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="b" Property="Background" Value="{DynamicResource BgRowHot}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Tabs -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,14">
+            <RadioButton x:Name="TabShortcut"  Style="{StaticResource TabRadio}" Content="Shortcut" IsChecked="True" Checked="OnSettingsTab"/>
+            <RadioButton x:Name="TabTheme"     Style="{StaticResource TabRadio}" Content="Theme" Checked="OnSettingsTab"/>
+            <RadioButton x:Name="TabClipboard" Style="{StaticResource TabRadio}" Content="Clipboard" Checked="OnSettingsTab"/>
+        </StackPanel>
+
+        <!-- ===== Shortcut panel ===== -->
+        <ScrollViewer Grid.Row="1" x:Name="PanelShortcut" VerticalScrollBarVisibility="Auto">
+         <StackPanel>
+            <TextBlock Text="Keyboard shortcut" Foreground="{DynamicResource Fg}" FontSize="16" FontWeight="SemiBold"/>
+            <TextBlock Foreground="{DynamicResource FgDim}" TextWrapping="Wrap" Margin="0,6,0,16"
+                       Text="This is the key combination that opens the clipboard popup. Click the box below, then press the keys you want (e.g. Ctrl+Shift+V). Note: Windows reserves Win+V, so it cannot be used."/>
+
+            <TextBlock Text="Current shortcut:" Foreground="{DynamicResource FgDim}" FontSize="12" Margin="0,0,0,4"/>
+            <Button x:Name="ShortcutButton" Style="{StaticResource Btn}" HorizontalAlignment="Left"
+                    MinWidth="220" HorizontalContentAlignment="Left" Click="OnRecordShortcut"
+                    Content="Ctrl+Shift+V"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                <Button x:Name="SaveShortcut" Style="{StaticResource Btn}" Content="Save" Click="OnSaveShortcut" Margin="0,0,8,0"/>
+                <Button x:Name="ClearShortcut" Style="{StaticResource Btn}" Content="Clear (no shortcut)" Click="OnClearShortcut"/>
+            </StackPanel>
+
+            <Border Background="{DynamicResource BgRow}" Padding="12" Margin="0,20,0,0">
+                <StackPanel>
+                    <CheckBox x:Name="WinVCheck" Foreground="{DynamicResource Fg}" FontSize="13"
+                              Content="Also open with Win+V" Checked="OnToggleWinV" Unchecked="OnToggleWinV"/>
+                    <TextBlock Foreground="{DynamicResource FgDim}" TextWrapping="Wrap" FontSize="12" Margin="22,4,0,0"
+                               Text="Uses a keyboard hook to grab Win+V and open this app, suppressing Windows' built-in clipboard popup. No registry/policy change needed while this is on."/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource BgRow}" Padding="12" Margin="0,10,0,0">
+                <StackPanel>
+                    <CheckBox x:Name="PauseGamesCheck" Foreground="{DynamicResource Fg}" FontSize="13"
+                              Content="Pause while a fullscreen app (game) is open" Checked="OnTogglePauseGames" Unchecked="OnTogglePauseGames"/>
+                    <TextBlock Foreground="{DynamicResource FgDim}" TextWrapping="Wrap" FontSize="12" Margin="22,4,0,0"
+                               Text="Temporarily disables the keyboard hooks and shortcut whenever a fullscreen program is in the foreground, so anti-cheat software has nothing to flag. Restores automatically when you leave the game."/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{DynamicResource BgRow}" Padding="12" Margin="0,10,0,0">
+                <StackPanel>
+                    <CheckBox x:Name="DoubleClickCheck" Foreground="{DynamicResource Fg}" FontSize="13"
+                              Content="Use double-click to paste" Checked="OnTogglePasteMode" Unchecked="OnTogglePasteMode"/>
+                    <TextBlock Foreground="{DynamicResource FgDim}" TextWrapping="Wrap" FontSize="12" Margin="22,4,0,0"
+                               Text="By default a single click on an entry pastes it. Turn this on to require a double-click instead (a single click then only selects)."/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock x:Name="ShortcutStatus" Foreground="{DynamicResource FgDim}" Margin="0,12,0,0" TextWrapping="Wrap"/>
+         </StackPanel>
+        </ScrollViewer>
+
+        <!-- ===== Theme panel ===== -->
+        <DockPanel Grid.Row="1" x:Name="PanelTheme" Visibility="Collapsed">
+            <TextBlock DockPanel.Dock="Top" Text="Theme" Foreground="{DynamicResource Fg}" FontSize="16" FontWeight="SemiBold"/>
+
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,10,0,6">
+                <TextBlock Text="Theme:" Foreground="{DynamicResource FgDim}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox x:Name="ThemeCombo" Width="180" SelectionChanged="OnThemeSelected"/>
+            </StackPanel>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                <Button x:Name="AddTheme" Style="{StaticResource Btn}" Content="Add custom theme" Click="OnAddTheme" Margin="0,0,8,0"/>
+                <Button x:Name="DeleteTheme" Style="{StaticResource Btn}" Content="Delete" Click="OnDeleteTheme" Margin="0,0,8,0"/>
+                <Button x:Name="ImportTheme" Style="{StaticResource Btn}" Content="Import…" Click="OnImportTheme" Margin="0,0,8,0"/>
+                <Button x:Name="ExportTheme" Style="{StaticResource Btn}" Content="Export…" Click="OnExportTheme"/>
+            </StackPanel>
+            <TextBlock DockPanel.Dock="Top" x:Name="ThemeHint" Foreground="{DynamicResource FgDim}" TextWrapping="Wrap"
+                       FontSize="12" Margin="0,0,0,10"/>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="ThemeHost"/>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- ===== Clipboard panel ===== -->
+        <DockPanel Grid.Row="1" x:Name="PanelClipboard" Visibility="Collapsed">
+            <TextBlock DockPanel.Dock="Top" Text="Clipboard history" Foreground="{DynamicResource Fg}" FontSize="16" FontWeight="SemiBold"/>
+            <TextBlock DockPanel.Dock="Top" Foreground="{DynamicResource FgDim}" TextWrapping="Wrap" Margin="0,6,0,8"
+                       Text="Everything you've copied. Double-click an item to copy it back to the clipboard (this does not paste). Right-click for Copy / Pin / Delete."/>
+
+            <Border DockPanel.Dock="Top" Background="{DynamicResource BgPanel}" BorderBrush="{DynamicResource BorderColor}"
+                    BorderThickness="1" Padding="8,0" Margin="0,0,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="🔍  Search…" Foreground="{DynamicResource FgDim}" VerticalAlignment="Center"
+                               IsHitTestVisible="False" x:Name="ClipSearchPlaceholder"/>
+                    <TextBox Grid.Column="0" x:Name="ClipSearchBox" Background="Transparent" BorderThickness="0"
+                             Foreground="{DynamicResource Fg}" CaretBrush="{DynamicResource Fg}"
+                             VerticalContentAlignment="Center" Height="32" FontSize="13" TextChanged="OnClipSearchChanged"/>
+                    <Button Grid.Column="1" x:Name="ClipClearBtn" Content="✕" FontSize="12" Width="24" Height="24"
+                            Background="Transparent" BorderThickness="0" Foreground="{DynamicResource IconColor}"
+                            Cursor="Hand" Visibility="Collapsed" Click="OnClipClearSearch"/>
+                </Grid>
+            </Border>
+
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                <RadioButton x:Name="ClipTabAll"    Style="{StaticResource TabRadio}" Content="All" IsChecked="True" Checked="OnClipTabChanged"/>
+                <RadioButton x:Name="ClipTabPinned" Style="{StaticResource TabRadio}" Content="📌 Pinned" Checked="OnClipTabChanged"/>
+                <RadioButton x:Name="ClipTabImages" Style="{StaticResource TabRadio}" Content="🖼 Images" Checked="OnClipTabChanged"/>
+            </StackPanel>
+
+            <TextBlock DockPanel.Dock="Bottom" x:Name="ClipStatus" Foreground="{DynamicResource Accent}" Margin="0,8,0,0"/>
+            <ListBox x:Name="ClipList" Background="Transparent" BorderThickness="0"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     VirtualizingPanel.IsVirtualizing="False"
+                     ItemContainerStyle="{StaticResource EntryItem}"
+                     MouseDoubleClick="OnClipDoubleClick">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Background="Transparent">
+                            <Grid.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Copy" Click="OnClipMenuCopy"/>
+                                    <MenuItem Header="{Binding PinMenuText}" Click="OnClipPin"/>
+                                    <Separator/>
+                                    <MenuItem Header="Delete" Click="OnClipDelete"/>
+                                </ContextMenu>
+                            </Grid.ContextMenu>
+                            <TextBlock Text="{Binding DisplayText}" Foreground="{DynamicResource Fg}"
+                                       TextWrapping="Wrap" MaxHeight="60" TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center" FontSize="13"
+                                       Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}"
+                                       ToolTipService.InitialShowDelay="600" ToolTipService.BetweenShowDelay="0">
+                                <TextBlock.ToolTip>
+                                    <ToolTip><TextBlock Text="{Binding FullText}" TextWrapping="Wrap" FontSize="12"/></ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                            <Image Source="{Binding Thumbnail}" MaxHeight="90" MaxWidth="360"
+                                   HorizontalAlignment="Left" Stretch="Uniform"
+                                   Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}"
+                                   ToolTipService.InitialShowDelay="600" ToolTipService.BetweenShowDelay="0">
+                                <Image.ToolTip>
+                                    <ToolTip>
+                                        <Image Source="{Binding Preview}" MaxWidth="480" MaxHeight="360" Stretch="Uniform"/>
+                                    </ToolTip>
+                                </Image.ToolTip>
+                            </Image>
+
+                            <!-- Pin marker shown on pinned rows -->
+                            <Path Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                  Fill="{DynamicResource IconColor}"
+                                  Visibility="{Binding IsPinned, Converter={StaticResource BoolToVis}}"
+                                  Data="M16,9 V4 h1 c.55,0 1,-.45 1,-1 s-.45,-1 -1,-1 H7 c-.55,0 -1,.45 -1,1 s.45,1 1,1 h1 v5 c0,1.66 -1.34,3 -3,3 v2 h5.97 v7 l1,1 1,-1 v-7 H19 v-2 c-1.66,0 -3,-1.34 -3,-3 z"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Grid>
+</Window>
