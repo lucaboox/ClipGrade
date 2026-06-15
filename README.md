@@ -5,6 +5,14 @@ upgrade to the built-in clipboard.
 It runs quietly in the system tray and pops up a searchable clipboard history
 right above your text cursor.
 
+## Screenshots
+
+| Popup over a text field | Theme settings |
+|:---:|:---:|
+| ![ClipGrade popup](screenshots/popup.png) | ![Theme settings](screenshots/theme.png) |
+| **Shortcut settings** | **Clipboard history** |
+| ![Shortcut settings](screenshots/shortcut.png) | ![Clipboard history](screenshots/clipboard-history.png) |
+
 ## Features
 
 - **Captures text and images** copied anywhere in Windows.
