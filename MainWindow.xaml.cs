@@ -50,6 +50,8 @@ public partial class MainWindow : Window
         _view = CollectionViewSource.GetDefaultView(_store.Entries);
         _view.Filter = FilterPredicate;
         List.ItemsSource = _view;
+        _store.Entries.CollectionChanged += (_, _) => UpdateEmptyState();
+        UpdateEmptyState();
 
         var helper = new WindowInteropHelper(this);
         helper.EnsureHandle();
@@ -293,6 +295,7 @@ public partial class MainWindow : Window
                 if (!string.IsNullOrWhiteSpace(text)) _store.AddText(text);
             }
             _view?.Refresh();
+            UpdateEmptyState();
         }
         catch (Exception) when (attempt < 5)
         {
@@ -352,6 +355,7 @@ public partial class MainWindow : Window
         TabAll.IsChecked = true;
         _activeTab = "All";
         _view.Refresh();
+        UpdateEmptyState();
 
         Visibility = Visibility.Visible;
         UpdateLayout();
@@ -479,6 +483,7 @@ public partial class MainWindow : Window
         SearchPlaceholder.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
         ClearSearchBtn.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
         _view.Refresh();
+        UpdateEmptyState();
         if (List.Items.Count > 0) List.SelectedIndex = 0;
     }
 
@@ -494,8 +499,26 @@ public partial class MainWindow : Window
         {
             _activeTab = rb == TabPinned ? "Pinned" : rb == TabImages ? "Images" : "All";
             _view.Refresh();
+            UpdateEmptyState();
             if (List.Items.Count > 0) List.SelectedIndex = 0;
         }
+    }
+
+    private void UpdateEmptyState()
+    {
+        if (EmptyState == null || List == null) return;
+        bool hasItems = List.Items.Count > 0;
+        EmptyState.Visibility = hasItems ? Visibility.Collapsed : Visibility.Visible;
+
+        var q = SearchBox.Text?.Trim();
+        EmptyState.Text = !string.IsNullOrEmpty(q)
+            ? "No matching clipboard items."
+            : _activeTab switch
+            {
+                "Pinned" => "Pinned items will stay here.",
+                "Images" => "Copied images will appear here.",
+                _ => "Copy text or an image to start building your history."
+            };
     }
 
     private void OnListPreviewMouseDown(object sender, MouseButtonEventArgs e)

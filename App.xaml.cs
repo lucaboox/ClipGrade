@@ -113,8 +113,15 @@ public partial class App : System.Windows.Application
         }
 
         IntPtr hicon = bmp.GetHicon();
-        using var temp = Icon.FromHandle(hicon);
-        return (Icon)temp.Clone(); // own a managed copy so we can free the HICON
+        try
+        {
+            using var temp = Icon.FromHandle(hicon);
+            return (Icon)temp.Clone(); // own a managed copy so we can free the HICON
+        }
+        finally
+        {
+            NativeMethods.DestroyIcon(hicon);
+        }
     }
 
     private static GraphicsPath RoundedRect(RectangleF r, float radius)

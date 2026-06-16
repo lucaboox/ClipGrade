@@ -232,51 +232,62 @@
             </StackPanel>
 
             <TextBlock DockPanel.Dock="Bottom" x:Name="ClipStatus" Foreground="{DynamicResource Accent}" Margin="0,8,0,0"/>
-            <ListBox x:Name="ClipList" Background="Transparent" BorderThickness="0"
-                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     VirtualizingPanel.IsVirtualizing="False"
-                     ItemContainerStyle="{StaticResource EntryItem}"
-                     MouseDoubleClick="OnClipDoubleClick">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Background="Transparent">
-                            <Grid.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Copy" Click="OnClipMenuCopy"/>
-                                    <MenuItem Header="{Binding PinMenuText}" Click="OnClipPin"/>
-                                    <Separator/>
-                                    <MenuItem Header="Delete" Click="OnClipDelete"/>
-                                </ContextMenu>
-                            </Grid.ContextMenu>
-                            <TextBlock Text="{Binding DisplayText}" Foreground="{DynamicResource Fg}"
-                                       TextWrapping="Wrap" MaxHeight="60" TextTrimming="CharacterEllipsis"
-                                       VerticalAlignment="Center" FontSize="13"
-                                       Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}"
+            <Grid>
+                <ListBox x:Name="ClipList" Background="Transparent" BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         VirtualizingPanel.IsVirtualizing="False"
+                         ItemContainerStyle="{StaticResource EntryItem}"
+                         MouseDoubleClick="OnClipDoubleClick">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Background="Transparent">
+                                <Grid.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Copy" Click="OnClipMenuCopy"/>
+                                        <MenuItem Header="{Binding PinMenuText}" Click="OnClipPin"/>
+                                        <Separator/>
+                                        <MenuItem Header="Delete" Click="OnClipDelete"/>
+                                    </ContextMenu>
+                                </Grid.ContextMenu>
+                                <TextBlock Text="{Binding DisplayText}" Foreground="{DynamicResource Fg}"
+                                           TextWrapping="Wrap" MaxHeight="60" TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" FontSize="13"
+                                           Visibility="{Binding IsText, Converter={StaticResource BoolToVis}}"
+                                           ToolTipService.InitialShowDelay="600" ToolTipService.BetweenShowDelay="0">
+                                    <TextBlock.ToolTip>
+                                        <ToolTip><TextBlock Text="{Binding FullText}" TextWrapping="Wrap" FontSize="12"/></ToolTip>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                                <Image Source="{Binding Thumbnail}" MaxHeight="90" MaxWidth="360"
+                                       HorizontalAlignment="Left" Stretch="Uniform"
+                                       Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}"
                                        ToolTipService.InitialShowDelay="600" ToolTipService.BetweenShowDelay="0">
-                                <TextBlock.ToolTip>
-                                    <ToolTip><TextBlock Text="{Binding FullText}" TextWrapping="Wrap" FontSize="12"/></ToolTip>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                            <Image Source="{Binding Thumbnail}" MaxHeight="90" MaxWidth="360"
-                                   HorizontalAlignment="Left" Stretch="Uniform"
-                                   Visibility="{Binding IsImage, Converter={StaticResource BoolToVis}}"
-                                   ToolTipService.InitialShowDelay="600" ToolTipService.BetweenShowDelay="0">
-                                <Image.ToolTip>
-                                    <ToolTip>
-                                        <Image Source="{Binding Preview}" MaxWidth="480" MaxHeight="360" Stretch="Uniform"/>
-                                    </ToolTip>
-                                </Image.ToolTip>
-                            </Image>
+                                    <Image.ToolTip>
+                                        <ToolTip>
+                                            <Image Source="{Binding Preview}" MaxWidth="480" MaxHeight="360" Stretch="Uniform"/>
+                                        </ToolTip>
+                                    </Image.ToolTip>
+                                </Image>
 
-                            <!-- Pin marker shown on pinned rows -->
-                            <Path Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                  Fill="{DynamicResource IconColor}"
-                                  Visibility="{Binding IsPinned, Converter={StaticResource BoolToVis}}"
-                                  Data="M16,9 V4 h1 c.55,0 1,-.45 1,-1 s-.45,-1 -1,-1 H7 c-.55,0 -1,.45 -1,1 s.45,1 1,1 h1 v5 c0,1.66 -1.34,3 -3,3 v2 h5.97 v7 l1,1 1,-1 v-7 H19 v-2 c-1.66,0 -3,-1.34 -3,-3 z"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                                <!-- Pin marker shown on pinned rows -->
+                                <Path Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                      Fill="{DynamicResource IconColor}"
+                                      Visibility="{Binding IsPinned, Converter={StaticResource BoolToVis}}"
+                                      Data="M16,9 V4 h1 c.55,0 1,-.45 1,-1 s-.45,-1 -1,-1 H7 c-.55,0 -1,.45 -1,1 s.45,1 1,1 h1 v5 c0,1.66 -1.34,3 -3,3 v2 h5.97 v7 l1,1 1,-1 v-7 H19 v-2 c-1.66,0 -3,-1.34 -3,-3 z"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <TextBlock x:Name="ClipEmptyState"
+                           Foreground="{DynamicResource FgDim}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Margin="24"
+                           Visibility="Collapsed"/>
+            </Grid>
         </DockPanel>
     </Grid>
 </Window>

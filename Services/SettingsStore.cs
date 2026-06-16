@@ -29,7 +29,9 @@ public class SettingsStore
         try
         {
             Directory.CreateDirectory(Storage.RootDir);
-            File.WriteAllText(SettingsFile, JsonSerializer.Serialize(settings, JsonOpts));
+            var temp = SettingsFile + ".tmp";
+            File.WriteAllText(temp, JsonSerializer.Serialize(settings, JsonOpts));
+            File.Move(temp, SettingsFile, true);
         }
         catch { /* best effort */ }
     }

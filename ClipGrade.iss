@@ -2,7 +2,7 @@
 ; Build with: iscc ClipGrade.iss   (produces Output\ClipGrade-Setup.exe)
 
 #define AppName "ClipGrade"
-#define AppVersion "1.1.0"
+#define AppVersion "1.1.1"
 #define AppPublisher "lucab"
 #define AppExe "ClipGrade.exe"
 

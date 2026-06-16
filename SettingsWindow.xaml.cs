@@ -55,6 +55,8 @@ public partial class SettingsWindow : Window
 
         _clipView = new System.Windows.Data.ListCollectionView(_store.Entries) { Filter = ClipFilter };
         ClipList.ItemsSource = _clipView;
+        _store.Entries.CollectionChanged += OnClipEntriesChanged;
+        UpdateClipEmptyState();
 
         int cap = Math.Clamp(_settings.MaxHistory, (int)HistorySlider.Minimum, (int)HistorySlider.Maximum);
         HistorySlider.Value = cap;
@@ -86,6 +88,18 @@ public partial class SettingsWindow : Window
             case 2: TabClipboard.IsChecked = true; break;
             default: TabShortcut.IsChecked = true; break;
         }
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        _store.Entries.CollectionChanged -= OnClipEntriesChanged;
+        base.OnClosed(e);
+    }
+
+    private void OnClipEntriesChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        _clipView?.Refresh();
+        UpdateClipEmptyState();
     }
 
     private void OnSettingsTab(object sender, RoutedEventArgs e)
@@ -516,14 +530,22 @@ public partial class SettingsWindow : Window
     private void OnClipPin(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.DataContext is ClipboardEntry entry)
+        {
             _store.TogglePin(entry);
+            _clipView.Refresh();
+            UpdateClipEmptyState();
+        }
         e.Handled = true;
     }
 
     private void OnClipDelete(object sender, RoutedEventArgs e)
     {
         if ((sender as FrameworkElement)?.DataContext is ClipboardEntry entry)
+        {
             _store.Delete(entry);
+            _clipView.Refresh();
+            UpdateClipEmptyState();
+        }
         e.Handled = true;
     }
 
@@ -553,6 +575,7 @@ public partial class SettingsWindow : Window
         ClipSearchPlaceholder.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
         ClipClearBtn.Visibility = empty ? Visibility.Collapsed : Visibility.Visible;
         _clipView.Refresh();
+        UpdateClipEmptyState();
     }
 
     private void OnClipClearSearch(object sender, RoutedEventArgs e) => ClipSearchBox.Text = string.Empty;
@@ -574,7 +597,25 @@ public partial class SettingsWindow : Window
         {
             _clipTab = rb == ClipTabPinned ? "Pinned" : rb == ClipTabImages ? "Images" : "All";
             _clipView.Refresh();
+            UpdateClipEmptyState();
         }
+    }
+
+    private void UpdateClipEmptyState()
+    {
+        if (ClipEmptyState == null || ClipList == null) return;
+        bool hasItems = ClipList.Items.Count > 0;
+        ClipEmptyState.Visibility = hasItems ? Visibility.Collapsed : Visibility.Visible;
+
+        var q = ClipSearchBox.Text?.Trim();
+        ClipEmptyState.Text = !string.IsNullOrEmpty(q)
+            ? "No matching clipboard items."
+            : _clipTab switch
+            {
+                "Pinned" => "Pinned items will stay here.",
+                "Images" => "Copied images will appear here.",
+                _ => "Your copied text and images will appear here."
+            };
     }
 
     private static T? FindAncestor<T>(DependencyObject? current) where T : DependencyObject

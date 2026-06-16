@@ -11,7 +11,7 @@
     <AssemblyName>ClipGrade</AssemblyName>
     <RootNamespace>ClipboardApp</RootNamespace>
     <ApplicationIcon>clipboard.ico</ApplicationIcon>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Product>ClipGrade</Product>
     <!-- DPI is configured via app.manifest (PerMonitorV2) for the WPF windows. -->
     <NoWarn>WFO0003</NoWarn>

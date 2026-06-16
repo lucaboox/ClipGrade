@@ -28,6 +28,9 @@ public class ClipboardEntry : INotifyPropertyChanged
     /// <summary>Absolute path to the PNG for image entries. Null for text.</summary>
     public string? ImagePath { get; set; }
 
+    /// <summary>Stable hash of the entry contents, used to de-duplicate images.</summary>
+    public string? ContentHash { get; set; }
+
     public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
 
     private bool _isPinned;

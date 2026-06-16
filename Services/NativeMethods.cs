@@ -151,6 +151,9 @@ internal static class NativeMethods
     [DllImport("user32.dll")]
     public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool DestroyIcon(IntPtr hIcon);
+
     // ---- Low-level hooks (keyboard + mouse) ----
     public const int WH_KEYBOARD_LL = 13;
     public const int WH_MOUSE_LL = 14;

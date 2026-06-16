@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Security.Cryptography;
 using System.Windows.Media.Imaging;
 using ClipboardApp.Models;
 
@@ -52,19 +53,43 @@ public class ClipboardStore
 
     public void AddImage(BitmapSource bmp)
     {
-        var path = _storage.NewImagePath();
+        byte[] pngBytes;
+        string hash;
         try
         {
-            using var fs = new FileStream(path, FileMode.Create);
+            using var ms = new MemoryStream();
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bmp));
-            encoder.Save(fs);
+            encoder.Save(ms);
+            pngBytes = ms.ToArray();
+            hash = Convert.ToHexString(SHA256.HashData(pngBytes));
         }
         catch
         {
             return;
         }
-        Entries.Insert(0, new ClipboardEntry { Kind = EntryKind.Image, ImagePath = path });
+
+        var existing = Entries.FirstOrDefault(e => e.Kind == EntryKind.Image && ImageHash(e) == hash);
+        if (existing != null)
+        {
+            Entries.Remove(existing);
+            existing.CreatedUtc = DateTime.UtcNow;
+            existing.ContentHash = hash;
+            Entries.Insert(0, existing);
+            TrimAndSave();
+            return;
+        }
+
+        var path = _storage.NewImagePath();
+        try
+        {
+            File.WriteAllBytes(path, pngBytes);
+        }
+        catch
+        {
+            return;
+        }
+        Entries.Insert(0, new ClipboardEntry { Kind = EntryKind.Image, ImagePath = path, ContentHash = hash });
         TrimAndSave();
     }
 
@@ -131,5 +156,21 @@ public class ClipboardStore
             }
         }
         _storage.Save(Entries);
+    }
+
+    private static string? ImageHash(ClipboardEntry entry)
+    {
+        if (!string.IsNullOrEmpty(entry.ContentHash)) return entry.ContentHash;
+        if (string.IsNullOrEmpty(entry.ImagePath) || !File.Exists(entry.ImagePath)) return null;
+
+        try
+        {
+            entry.ContentHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(entry.ImagePath)));
+            return entry.ContentHash;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

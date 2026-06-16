@@ -64,7 +64,7 @@ public class Storage
         try
         {
             var json = JsonSerializer.Serialize(entries.ToList(), JsonOpts);
-            File.WriteAllText(EntriesFile, json);
+            WriteAllTextAtomic(EntriesFile, json);
         }
         catch { /* best effort */ }
     }
@@ -80,5 +80,13 @@ public class Storage
                 File.Delete(entry.ImagePath);
         }
         catch { /* best effort */ }
+    }
+
+    private static void WriteAllTextAtomic(string path, string contents)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        var temp = path + ".tmp";
+        File.WriteAllText(temp, contents);
+        File.Move(temp, path, true);
     }
 }
