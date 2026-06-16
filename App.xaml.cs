@@ -67,6 +67,8 @@ public partial class App : System.Windows.Application
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Settings…", null, (_, _) => OpenSettings(0));
         menu.Items.Add("Clipboard history…", null, (_, _) => OpenSettings(2));
+        menu.Items.Add("About / updates…", null, (_, _) => OpenSettings(3));
+        menu.Items.Add("Check for updates…", null, async (_, _) => await CheckForUpdatesFromTrayAsync());
         menu.Items.Add(new ToolStripSeparator());
 
         var startupItem = new ToolStripMenuItem("Start on boot")
@@ -82,6 +84,50 @@ public partial class App : System.Windows.Application
         _tray.ContextMenuStrip = menu;
 
         _tray.DoubleClick += (_, _) => _window?.ShowAtCaret();
+    }
+
+    private async Task CheckForUpdatesFromTrayAsync()
+    {
+        if (_tray?.ContextMenuStrip != null)
+            _tray.ContextMenuStrip.Enabled = false;
+
+        try
+        {
+            var result = await UpdateService.CheckForUpdatesAsync();
+            if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+            {
+                System.Windows.MessageBox.Show(
+                    "Couldn't check for updates:\n" + result.ErrorMessage,
+                    "ClipGrade updates",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!result.IsUpdateAvailable)
+            {
+                System.Windows.MessageBox.Show(
+                    $"You're up to date.\n\nInstalled version: {result.CurrentVersion}",
+                    "ClipGrade updates",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                return;
+            }
+
+            var answer = System.Windows.MessageBox.Show(
+                $"A new version of ClipGrade is available.\n\nInstalled: {result.CurrentVersion}\nLatest: {result.LatestVersion}\n\nOpen the GitHub download?",
+                "ClipGrade updates",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+
+            if (answer == MessageBoxResult.Yes)
+                UpdateService.OpenUpdatePage(result);
+        }
+        finally
+        {
+            if (_tray?.ContextMenuStrip != null)
+                _tray.ContextMenuStrip.Enabled = true;
+        }
     }
 
     /// <summary>Draws a small clipboard glyph for the tray icon (no asset file needed).</summary>

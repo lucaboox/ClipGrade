@@ -36,6 +36,7 @@ public partial class SettingsWindow : Window
     private ThemeColors _editingColors = new();   // colors shown in the pickers
     private bool _themeEditable;                    // false for built-in themes
     private bool _populatingThemes;
+    private UpdateCheckResult? _lastUpdateCheck;
 
     private System.Windows.Data.ListCollectionView _clipView = null!;
     private string _clipTab = "All";
@@ -66,6 +67,8 @@ public partial class SettingsWindow : Window
         WinVCheck.IsChecked = _settings.Hotkey.UseWinV;
         PauseGamesCheck.IsChecked = _settings.PauseInFullscreen;
         DoubleClickCheck.IsChecked = _settings.PasteOnDoubleClick;
+        VersionText.Text = UpdateService.CurrentVersion;
+        UpdateStatus.Text = "Updates are checked from GitHub Releases.";
         UpdateShortcutControls();
     }
 
@@ -86,6 +89,7 @@ public partial class SettingsWindow : Window
         {
             case 1: TabTheme.IsChecked = true; break;
             case 2: TabClipboard.IsChecked = true; break;
+            case 3: TabAbout.IsChecked = true; break;
             default: TabShortcut.IsChecked = true; break;
         }
     }
@@ -108,6 +112,60 @@ public partial class SettingsWindow : Window
         PanelShortcut.Visibility = TabShortcut.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         PanelTheme.Visibility = TabTheme.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         PanelClipboard.Visibility = TabClipboard.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+        PanelAbout.Visibility = TabAbout.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    // ------------------------------------------------------------------
+    //  About / updates
+    // ------------------------------------------------------------------
+    private async void OnCheckUpdates(object sender, RoutedEventArgs e)
+    {
+        CheckUpdatesButton.IsEnabled = false;
+        UpdateStatus.Text = "Checking GitHub Releases...";
+
+        try
+        {
+            _lastUpdateCheck = await UpdateService.CheckForUpdatesAsync();
+            if (!string.IsNullOrWhiteSpace(_lastUpdateCheck.ErrorMessage))
+            {
+                UpdateStatus.Text = "Couldn't check for updates: " + _lastUpdateCheck.ErrorMessage;
+                return;
+            }
+
+            if (!_lastUpdateCheck.IsUpdateAvailable)
+            {
+                UpdateStatus.Text = $"You're up to date. Installed version: {_lastUpdateCheck.CurrentVersion}.";
+                return;
+            }
+
+            UpdateStatus.Text =
+                $"Update available. Installed: {_lastUpdateCheck.CurrentVersion}. Latest: {_lastUpdateCheck.LatestVersion}.";
+
+            var answer = MessageBox.Show(this,
+                $"A new version of ClipGrade is available.\n\nInstalled: {_lastUpdateCheck.CurrentVersion}\nLatest: {_lastUpdateCheck.LatestVersion}\n\nOpen the GitHub download?",
+                "ClipGrade updates",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Information);
+
+            if (answer == MessageBoxResult.Yes)
+                UpdateService.OpenUpdatePage(_lastUpdateCheck);
+        }
+        finally
+        {
+            CheckUpdatesButton.IsEnabled = true;
+        }
+    }
+
+    private void OnOpenReleases(object sender, RoutedEventArgs e)
+    {
+        UpdateService.OpenUpdatePage(_lastUpdateCheck ?? new UpdateCheckResult(
+            false,
+            UpdateService.CurrentVersion,
+            null,
+            null,
+            "https://github.com/lucaboox/ClipGrade/releases",
+            null,
+            null));
     }
 
     // ------------------------------------------------------------------

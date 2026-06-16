@@ -113,6 +113,7 @@
             <RadioButton x:Name="TabShortcut"  Style="{StaticResource TabRadio}" Content="Shortcut" IsChecked="True" Checked="OnSettingsTab"/>
             <RadioButton x:Name="TabTheme"     Style="{StaticResource TabRadio}" Content="Theme" Checked="OnSettingsTab"/>
             <RadioButton x:Name="TabClipboard" Style="{StaticResource TabRadio}" Content="Clipboard" Checked="OnSettingsTab"/>
+            <RadioButton x:Name="TabAbout"     Style="{StaticResource TabRadio}" Content="About" Checked="OnSettingsTab"/>
         </StackPanel>
 
         <!-- ===== Shortcut panel ===== -->
@@ -289,5 +290,39 @@
                            Visibility="Collapsed"/>
             </Grid>
         </DockPanel>
+
+        <!-- ===== About panel ===== -->
+        <ScrollViewer Grid.Row="1" x:Name="PanelAbout" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="About ClipGrade" Foreground="{DynamicResource Fg}" FontSize="16" FontWeight="SemiBold"/>
+
+                <Border Background="{DynamicResource BgRow}" Padding="12" Margin="0,12,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Version:" Foreground="{DynamicResource FgDim}" Margin="0,0,12,6"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="VersionText" Foreground="{DynamicResource Fg}" FontWeight="SemiBold" Margin="0,0,0,6"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Updates:" Foreground="{DynamicResource FgDim}" Margin="0,0,12,0"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Foreground="{DynamicResource Fg}" TextWrapping="Wrap"
+                                   Text="Checks GitHub Releases for this project and opens the release download. No other server is used."/>
+                    </Grid>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                    <Button x:Name="CheckUpdatesButton" Style="{StaticResource Btn}" Content="Check for updates" Click="OnCheckUpdates" Margin="0,0,8,0"/>
+                    <Button x:Name="OpenReleasesButton" Style="{StaticResource Btn}" Content="Open releases" Click="OnOpenReleases"/>
+                </StackPanel>
+
+                <TextBlock x:Name="UpdateStatus" Foreground="{DynamicResource FgDim}" TextWrapping="Wrap" Margin="0,12,0,0"/>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
